@@ -8,5 +8,6 @@ declare global {
     email: string
     phone: string
     imageUrl?: string
+    [key: string]: string;
   }
 }
