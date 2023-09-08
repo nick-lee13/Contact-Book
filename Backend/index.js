@@ -130,3 +130,26 @@ app.listen(PORT, () => {
       }
     );
 });
+
+    // SEARCH REQUEST: returns search result:
+    app.get('/api/contacts/SearchContacts', (req, res) => {
+        const query = req.query.query.toLowerCase(); // Get the search query from query parameters
+    
+        // Search logic using MongoDB's $or operator to match any of the criteria
+        database.collection("contactsCollection").find({
+        $or: [
+            { email: { $regex: query, $options: 'i' } }, // Case-insensitive email search
+            { phone: { $regex: query } }, // Phone search
+            { lName: { $regex: query, $options: 'i' } }, // Case-insensitive last name search
+            { fName: { $regex: query, $options: 'i' } }, // Case-insensitive first name search
+        ],
+        }).toArray((error, result) => {
+        if (error) {
+            console.error("Error searching contacts:", error);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+    
+        res.json(result);
+        });
+    });  
+    
