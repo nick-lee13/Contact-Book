@@ -10,12 +10,18 @@ const ContactTable = () => {
   const [displayForm, setDisplayForm] = useState(false);
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+
 
   const API_URL = "http://localhost:5038/"; // Backend RESTful API URL
 
   useEffect(() => {
     fetchUserData();
   }, []);
+
+  useEffect(() => {
+    handleSearch();
+  }, [searchQuery]);
 
   const fetchUserData = async () => {
     try {
@@ -63,6 +69,28 @@ const ContactTable = () => {
     setSelectedIndex(-1);
   };
 
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value);
+  }
+
+  const handleSearch = async () => {
+    if (searchQuery === "") {
+      // If the search query is empty, fetch all contacts
+      fetchUserData();
+    } else {
+      // Filter contacts based on the search query
+      try {
+        const response = await axios.get(
+          `${API_URL}api/contacts/SearchContacts?query=${searchQuery}`
+        );
+        setContactData(response.data);
+      } catch (error) {
+        console.error("Error searching contacts: ", error);
+      }
+    }
+  };
+  
+
   const sortContacts = (column: string) => {
     if (sortColumn === column) {
       setSortDirection(-1 * sortDirection);
@@ -90,6 +118,19 @@ const ContactTable = () => {
 
   return (
     <>
+      <div className="mb-3">
+        <input
+          type="text"
+          className="form-control"
+          placeholder="Search..."
+          value={searchQuery}
+          onChange={handleSearchChange}
+        />
+        <button className="btn btn-primary" onClick={handleSearch}>
+          Search
+        </button>
+      </div>
+
       <table className="table">
         <thead>
           <tr className="contact-row">
