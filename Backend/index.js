@@ -5,6 +5,7 @@ const multer = require("multer");
 
 const app = express ();
 app.use(cors());
+app.use(express.json());
 
 const PORT = 5038;
 
@@ -30,18 +31,41 @@ app.listen(PORT, () => {
   })
 
   // POST REQUEST: Adds a contact to DB
-  app.post('/api/contacts/AddContacts',multer().none(),(request,response)=>{
-    database.collection("contactsCollection").count({},function(error,numOfDocs){
-        database.collection("contactsCollection").insertOne({
-            id:(numOfDocs+1).toString(),
-            description:request.body.newContacts
-        });
-        response.json("Added Succesfully");
-    })
-  })
-
+  app.post('/api/contacts/AddContacts', multer().none(), (request, response) => {
+    const {
+      id,
+      fName,
+      lName,
+      email,
+      phone,
+      imageUrl
+    } = request.body;
+  
+    // Check if required properties are present
+    if (!id || !fName || !lName || !email || !phone || !imageUrl) {
+      return response.status(400).json({ error: 'All contact properties are required.' });
+    }
+  
+    // Add contact data to the database
+    database.collection("contactsCollection").insertOne({
+      id,
+      fName,
+      lName,
+      email,
+      phone,
+      imageUrl
+    }, (error, result) => {
+      if (error) {
+        console.error("Error adding contact:", error);
+        response.status(500).json({ error: 'An error occurred while adding the contact.' });
+      } else {
+        response.json("Added Successfully");
+      }
+    });
+  });
+  
   // DELETE REQUEST: Deletes a contact from the DB
-  app.delete('contacts/DeleteContacts',(request,response)=>{
+  app.delete('/api/contacts/DeleteContacts',(request,response)=>{
     database.collection("contactsCollection").deleteOne({
         id:request.query.id
     });
@@ -49,26 +73,56 @@ app.listen(PORT, () => {
   })
 
   // PATCH REQUEST: Updates a contact in the DB
-  app.patch('/api/contacts/UpdateContacts', multer().none(), (request, response) => {
-    const { id, newContacts } = request.body;
-    
-    if (!id || !newContacts) {
-        return response.status(400).json({ error: 'Both id and newContacts are required for the update.' });
+app.patch('/api/contacts/UpdateContacts', multer().none(), (request, response) => {
+    const {
+      id,
+      fName,
+      lName,
+      email,
+      phone,
+      imageUrl
+    } = request.body;
+  
+    if (!id) {
+      return response.status(400).json({ error: 'id is required for the update.' });
     }
+  
+    const updateFields = {};
+  
+    if (fName) {
+      updateFields.fName = fName;
+    }
+  
+    if (lName) {
+      updateFields.lName = lName;
+    }
+  
+    if (email) {
+      updateFields.email = email;
+    }
+  
+    if (phone) {
+      updateFields.phone = phone;
+    }
+  
+    if (imageUrl) {
+      updateFields.imageUrl = imageUrl;
+    }
+  
     database.collection("contactsCollection").findOneAndUpdate(
-        { id: id },
-        { $set: { description: newContacts } },
-        { returnOriginal: false }, // This option ensures you get the updated document
-        (error, result) => {
-            if (error) {
-                return response.status(500).json({ error: 'An error occurred while updating the contact.' });
-            }
-
-            if (!result.value) {
-                return response.status(404).json({ error: 'Contact not found.' });
-            }
-
-            response.json({ message: 'Contact updated successfully', updatedContact: result.value });
+      { id: id },
+      { $set: updateFields }, // Update only provided fields
+      { returnOriginal: false },
+      (error, result) => {
+        if (error) {
+          return response.status(500).json({ error: 'An error occurred while updating the contact.' });
         }
+  
+        if (!result.value) {
+          return response.status(404).json({ error: 'Contact not found.' });
+        }
+  
+        response.json({ message: 'Contact updated successfully', updatedContact: result.value });
+      }
     );
 });
