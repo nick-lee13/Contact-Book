@@ -11,6 +11,7 @@ const ContactTable = () => {
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const [imageUploadError, setImageUploadError] = useState<string | null>(null);
 
 
   const API_URL = "http://localhost:5038/"; // Backend RESTful API URL
@@ -48,6 +49,20 @@ const ContactTable = () => {
           `${API_URL}api/contacts/UpdateContacts?id=${contact.id}`,
           contact
         ); // API Call to update contact of ID with new contact info
+
+        // Check if there is an image to upload
+        if (contact.image) {
+          const formData = new FormData();
+          formData.append("image", contact.image);
+
+          // API Call to upload the image
+          await axios.post(`${API_URL}api/contacts/UploadImage`, formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          });
+        }
+
         fetchUserData();
         closeFormModal();
       } catch (error) {
@@ -67,6 +82,7 @@ const ContactTable = () => {
   const closeFormModal = () => {
     setDisplayForm(false);
     setSelectedIndex(-1);
+    setImageUploadError(null); //Clear old images
   };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {

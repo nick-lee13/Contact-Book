@@ -23,6 +23,7 @@ const ContactForm = ({
     imageUrl: "",
   };
   const [tempData, setTempData] = useState<Contact>(newData);
+  const [image, setImage] = useState<File | null>(null); // State to hold the uploaded image
 
   let modal_title = "Add New Contact";
 
@@ -42,6 +43,13 @@ const ContactForm = ({
     phone: "",
     imageUrl: "",
   });
+
+    // Handle image upload
+    const handleImageUpload = (files: FileList | null) => {
+      if (files && files.length > 0) {
+        setImage(files[0]);
+      }
+    };
 
   // Validate required data in form
   const validateForm = () => {
@@ -71,9 +79,12 @@ const ContactForm = ({
       errors.phone = "Invalid phone format! (10 digits)";
       isValid = false;
     }
-    if(tempData.imageUrl){
-      if (!/\.(jpg|jpeg|png|gif)$/i.test(tempData.imageUrl)) {
-        errors.imageUrl = "Invalid image URL";
+    if(image){
+      // Check for image file type
+      const allowedExtensions = ["jpg", "jpeg", "png", "gif"];
+      const fileExtension = image.name.split(".").pop()?.toLowerCase();
+      if (!fileExtension || !allowedExtensions.includes(fileExtension)) {
+        errors.imageUrl = "Invalid image file type (jpg, jpeg, png, gif)";
         isValid = false;
       }
     }
@@ -102,7 +113,8 @@ const ContactForm = ({
                 <form onSubmit={(e) => {
                   e.preventDefault();
                   if(validateForm()){
-                    onUpdateData(tempData);
+                    const updatedUserData = { ...tempData, image };
+                    onUpdateData(updatedUserData);
                   }
                 }}>
                   <div className="mb-3">
@@ -157,15 +169,12 @@ const ContactForm = ({
                     <div className="text-danger">{validationErrors.phone}</div>
                   </div>
                   <div>
-                    <label>Image Url:</label>
+                    <label>Image Upload:</label>
                     <input
                       className="form-control"
-                      name="imageUrl"
-                      type="text"
-                      value={tempData.imageUrl}
-                      onChange={(e) =>
-                        setTempData({ ...tempData, imageUrl: e.target.value })
-                      }
+                      name="image"
+                      type="file"
+                      onChange={(e) => handleImageUpload(e.target.files)}
                     />
                     <div className="text-danger">{validationErrors.imageUrl}</div>
                   </div>
