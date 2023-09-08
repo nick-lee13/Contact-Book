@@ -13,6 +13,10 @@ const PORT = 5038;
 const CONNECTION_STRING = "mongodb+srv://ntlee:Vq6lyOilehqIm9z6@cluster0.fetbrjv.mongodb.net/?retryWrites=true&w=majority";
 var DATABASE_NAME = "contactsDB";
 
+//Multer storage for images
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+
 
 // Connect to DB and log connection
 app.listen(PORT, () => {
@@ -151,5 +155,26 @@ app.listen(PORT, () => {
     
         res.json(result);
         });
-    });  
-    
+    });
+
+    const { MongoClient, Binary } = require('mongodb');
+
+    const client = new MongoClient(CONNECTION_STRING, { useNewUrlParser: true, useUnifiedTopology: true });
+
+    app.post('/api/contacts/UploadImage', upload.single('image'), async (req, res) => {
+        try {
+          const imageCollection = client.collection('imageCollection');
+      
+          // Insert the image data into the imageCollection
+          const result = await imageCollection.insertOne({
+            data: new Binary(req.file.buffer), // Store the image data as Binary
+          });
+      
+          // Respond with a success message or the inserted document's ID
+          res.json({ message: 'Image uploaded successfully', imageId: result.insertedId });
+        } catch (error) {
+          console.error('Error uploading image: ', error);
+          res.status(500).json({ error: 'An error occurred while uploading the image' });
+        }
+      });
+      
