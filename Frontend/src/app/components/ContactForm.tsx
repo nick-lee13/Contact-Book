@@ -36,6 +36,52 @@ const ContactForm = ({
     }
   }, [visible]);
 
+  const [validationErrors, setValidationErrors] = useState({
+    fName: "",
+    email: "",
+    phone: "",
+    imageUrl: "",
+  });
+
+  // Validate required data in form
+  const validateForm = () => {
+    let isValid = true; //Any errors changes this to false
+    //Stores errors found
+    const errors = {
+      fName: "",
+      email: "",
+      phone: "",
+      imageUrl: "",
+    };
+
+    if(!tempData.fName){
+      errors.fName = "First Name Required!";
+      isValid = false;
+    }
+    if(!tempData.email && !tempData.phone){
+      errors.phone = "Email or Phone Number Required!";
+      errors.email = "Email or Phone Number Required!";
+      isValid = false;
+    }
+    if(tempData.email && !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(tempData.email)){
+      errors.email = "Invalid email format!";
+      isValid = false;
+    }
+    if(tempData.phone && !/^\d{10}$/.test(tempData.phone)){
+      errors.phone = "Invalid phone format! (10 digits)";
+      isValid = false;
+    }
+    if(tempData.imageUrl){
+      if (!/\.(jpg|jpeg|png|gif)$/i.test(tempData.imageUrl)) {
+        errors.imageUrl = "Invalid image URL";
+        isValid = false;
+      }
+    }
+
+    setValidationErrors(errors);
+    return isValid;
+  };
+
   return (
     <>
       {visible && (
@@ -53,7 +99,12 @@ const ContactForm = ({
                 ></button>
               </div>
               <div className="modal-body">
-                <form onSubmit={() => onUpdateData(tempData)}>
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  if(validateForm()){
+                    onUpdateData(tempData);
+                  }
+                }}>
                   <div className="mb-3">
                     <label className="form-label">First Name:</label>
                     <input
@@ -65,6 +116,7 @@ const ContactForm = ({
                         setTempData({ ...tempData, fName: e.target.value })
                       }
                     />
+                    <div className="text-danger">{validationErrors.fName}</div>
                   </div>
                   <div>
                     <label>Last Name:</label>
@@ -89,6 +141,7 @@ const ContactForm = ({
                         setTempData({ ...tempData, email: e.target.value })
                       }
                     />
+                    <div className="text-danger">{validationErrors.email}</div>
                   </div>
                   <div>
                     <label>Phone #:</label>
@@ -101,6 +154,7 @@ const ContactForm = ({
                         setTempData({ ...tempData, phone: e.target.value })
                       }
                     />
+                    <div className="text-danger">{validationErrors.phone}</div>
                   </div>
                   <div>
                     <label>Image Url:</label>
@@ -113,7 +167,14 @@ const ContactForm = ({
                         setTempData({ ...tempData, imageUrl: e.target.value })
                       }
                     />
+                    <div className="text-danger">{validationErrors.imageUrl}</div>
                   </div>
+                  <button
+                    type="submit"
+                    className="btn btn-primary"
+                  >
+                    Save Changes
+                  </button>
                 </form>
               </div>
               <div className="modal-footer">
@@ -124,13 +185,6 @@ const ContactForm = ({
                   data-bs-dismiss="modal"
                 >
                   Close
-                </button>
-                <button
-                  onClick={() => onUpdateData(tempData)}
-                  type="button"
-                  className="btn btn-primary"
-                >
-                  Save changes
                 </button>
               </div>
             </div>

@@ -44,8 +44,8 @@ app.listen(PORT, () => {
     } = request.body;
   
     // Check if required properties are present
-    if (!id || !fName || !lName || !email || !phone || !imageUrl) {
-      return response.status(400).json({ error: 'All contact properties are required.' });
+    if (!id || !fName || (!email && !phone)) {
+      return response.status(400).json({ error: 'Missing required contact properties.' });
     }
   
     // Add contact data to the database
