@@ -13,7 +13,7 @@ const ContactTable = () => {
     fetchUserData();
   }, []);
 
-  const API_URL="http://localhost:5038/";
+  const API_URL="http://localhost:5038/"; //Backend RESTful API URL
 
   const fetchUserData = async () => {
     /*//await fetch api
@@ -24,8 +24,8 @@ const ContactTable = () => {
 
     // Updated to use API requests
     try{
-      const response = await axios.get(API_URL+"api/contacts/GetContacts");
-    setContactData(response.data);
+      const response = await axios.get(API_URL+"api/contacts/GetContacts"); //API Call to retrieve contacts from DB
+    setContactData(response.data); // Sets returned data to populate page
     } catch(error){
       console.error("Error fetching contact data from database: ", error);
     }
@@ -39,8 +39,8 @@ const ContactTable = () => {
 
     // API Request to delete contact data
     try{
-      await axios.delete(`${API_URL}api/contacts/DeleteContacts?id=${id}`);
-      fetchUserData();
+      await axios.delete(`${API_URL}api/contacts/DeleteContacts?id=${id}`); // API Call to delete a contact given the ID
+      fetchUserData(); //Refresh contact list
     } catch(error){
       console.error("Error deleting contact: ", error);
     }
@@ -55,8 +55,7 @@ const ContactTable = () => {
 
       // API request to update a contact
       try{
-        console.log("ID to update: ", contact.id);
-        await axios.patch(`${API_URL}api/contacts/UpdateContacts?id=${contact.id}`, contact);
+        await axios.patch(`${API_URL}api/contacts/UpdateContacts?id=${contact.id}`, contact); //API Call to update contact of ID withg new contact info
         fetchUserData();
         closeFormModal();
       } catch(error){
@@ -71,7 +70,7 @@ const ContactTable = () => {
 
       // API request to add a contact
       try{
-        await axios.post(API_URL+"api/contacts/AddContacts", contact);
+        await axios.post(API_URL+"api/contacts/AddContacts", contact); //API call to add new contact, sends contact data to API
         fetchUserData();
         closeFormModal();
       } catch(error){
