@@ -16,22 +16,21 @@ Frontend:
 Access at http://localhost:3000/
 
 BACKEND
-RESTful API:
-Built using Node.JS + Express
-Hosted on local, port 5038
-MongoDB Database instantiated
-DATABASE_NAME: contactsDB
-COLLECTION_NAME: contactsCollection
-User: ntlee, Pass: Vq6lyOilehqIm9z6
-Endpoints:
-/api/contacts/GetContacts: GET request retrieves and returns list of contact currently stored in database
-/api/contacts/AddContacts: POST request adds a contact to the database
-/api/contacts/DeleteContacts: DELETE request deletes a contact from the database
-/api/contacts/UpdateContacts: PATCH request updates a contact if it is in the database
-/api/contacts/SearchContacts: GET request to retrieve search results based on query
-/api/contacts/UploadImage: POST request to upload an image to database
-
-Backend uses multer and express to read and store data between database and client
+- RESTful API:
+- Built using Node.JS + Express
+- Hosted on local, port 5038
+- MongoDB Database instantiated
+- DATABASE_NAME: contactsDB
+- COLLECTION_NAME: contactsCollection
+- User: ntlee, Pass: Vq6lyOilehqIm9z6
+- Endpoints:
+    - /api/contacts/GetContacts: GET request retrieves and returns list of contact currently stored in database
+    - /api/contacts/AddContacts: POST request adds a contact to the database
+    - /api/contacts/DeleteContacts: DELETE request deletes a contact from the database
+    - /api/contacts/UpdateContacts: PATCH request updates a contact if it is in the database
+    - /api/contacts/SearchContacts: GET request to retrieve search results based on query
+    - /api/contacts/UploadImage: POST request to upload an image to database
+- Backend uses multer and express to read and store data between database and client
 
 FRONTEND
 - Updated from local storage to API using axios to make requests to the API
