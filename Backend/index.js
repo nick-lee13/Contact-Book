@@ -4,8 +4,8 @@ const cors = require("cors");
 const multer = require("multer");
 
 const app = express ();
-app.use(cors());
-app.use(express.json());
+app.use(cors()); //avoid CORS issues
+app.use(express.json()); //for reading incoming data correctly
 
 const PORT = 5038;
 
@@ -25,6 +25,7 @@ app.listen(PORT, () => {
 
   // GET REQUEST: Gets all contacts in DB
   app.get('/api/contacts/GetContacts',(request,response)=>{
+    // Gets all results from DB and sents to frontend
     database.collection("contactsCollection").find({}).toArray((error,result)=>{
         response.send(result);
     });
@@ -32,6 +33,7 @@ app.listen(PORT, () => {
 
   // POST REQUEST: Adds a contact to DB
   app.post('/api/contacts/AddContacts', multer().none(), (request, response) => {
+    // Get data from request received
     const {
       id,
       fName,
@@ -65,6 +67,7 @@ app.listen(PORT, () => {
   });
   
   // DELETE REQUEST: Deletes a contact from the DB
+  // Finds contact by ID and removes from DB
   app.delete('/api/contacts/DeleteContacts',(request,response)=>{
     database.collection("contactsCollection").deleteOne({
         id:request.query.id
@@ -73,7 +76,8 @@ app.listen(PORT, () => {
   })
 
   // PATCH REQUEST: Updates a contact in the DB
-app.patch('/api/contacts/UpdateContacts', multer().none(), (request, response) => {
+  app.patch('/api/contacts/UpdateContacts', multer().none(), (request, response) => {
+    // Get data from request received
     const {
       id,
       fName,
@@ -83,32 +87,32 @@ app.patch('/api/contacts/UpdateContacts', multer().none(), (request, response) =
       imageUrl
     } = request.body;
   
+    //Must have ID
     if (!id) {
       return response.status(400).json({ error: 'id is required for the update.' });
     }
   
+    //Empty array for updated fields
     const updateFields = {};
   
+    //Check each data entry for changes and add to updateFields
     if (fName) {
       updateFields.fName = fName;
     }
-  
     if (lName) {
       updateFields.lName = lName;
     }
-  
     if (email) {
       updateFields.email = email;
     }
-  
     if (phone) {
       updateFields.phone = phone;
     }
-  
     if (imageUrl) {
       updateFields.imageUrl = imageUrl;
     }
   
+    // Update the contact in the DB
     database.collection("contactsCollection").findOneAndUpdate(
       { id: id },
       { $set: updateFields }, // Update only provided fields
