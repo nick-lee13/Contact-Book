@@ -1,4 +1,4 @@
-WeUsThem Developer Test Code - Nicholas Lee
+Contact Book - Nicholas Lee
 
 TO RUN:
 Backend:
@@ -22,7 +22,6 @@ BACKEND
 - MongoDB Database instantiated
 - DATABASE_NAME: contactsDB
 - COLLECTION_NAME: contactsCollection
-- User: ntlee, Pass: Vq6lyOilehqIm9z6
 - Endpoints:
     - /api/contacts/GetContacts: GET request retrieves and returns list of contact currently stored in database
     - /api/contacts/AddContacts: POST request adds a contact to the database
@@ -43,4 +42,4 @@ FRONTEND
 - Search:
     - Search by names, email, or phone, display is update with each character entry and search for partial or full results
 - Image upload:
-    - Doesnt fully function as of yet, there is storage and endpoints made but ran out of time.
+    - Doesnt fully function as of yet, there is storage and endpoints made but frontend functionality coming soon.
